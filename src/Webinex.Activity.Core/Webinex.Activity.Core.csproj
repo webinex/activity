@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="$(MSBuildThisFileDirectory)/../Webinex.Activity.All/Package.props" />
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <PackageId>Webinex.Activity.Core</PackageId>
+        <RootNamespace>Webinex.Activity</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="JWT" Version="8.7.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+      <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
+      <PackageReference Include="System.Text.Json" Version="6.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Webinex.Activity.Abstractions\Webinex.Activity.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
