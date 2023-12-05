@@ -60,7 +60,7 @@ namespace Webinex.Activity.Server.Controllers
             var total = includeTotal ? await queryable.CountAsync() : -1;
 
             var rows = await queryable
-                .OrderByDescending(x => x.PerformedAt)
+                .SortBy(_fieldMap, sortRule)
                 .PageBy(pagingRule)
                 .AsNoTracking()
                 .ToArrayAsync();
