@@ -7,6 +7,6 @@ namespace Webinex.Activity.Server.Controllers
 {
     public interface IActivityDtoMapper
     {
-        Task<ActivityDto[]> MapManyAsync([NotNull] IEnumerable<ActivityRow> rows);
+        Task<ActivityDto[]> MapManyAsync(IEnumerable<ActivityRow> rows);
     }
 }

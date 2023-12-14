@@ -18,7 +18,7 @@ namespace Webinex.Activity.ServiceBus
 
         public Task StoreAsync(IActivityBatchValue batch)
         {
-            var json = ActivityJson.Serialize(batch);
+            var json = ActivityJson.Serialize(batch) ?? throw new ArgumentNullException();
             var body = Encoding.UTF8.GetBytes(json);
             var message = new Message(body)
             {

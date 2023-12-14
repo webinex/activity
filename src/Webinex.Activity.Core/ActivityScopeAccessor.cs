@@ -7,19 +7,25 @@ namespace Webinex.Activity
 {
     public interface IActivityScopeProvider
     {
-        IActivityScope Value { get; set; }
+        IActivityScope? Value { get; set; }
+
+        IActivityScope RequiredValue =>
+            Value ?? throw new InvalidOperationException("Activity scope not provided");
     }
 
     public interface IActivityScopeAccessor
     {
-        IActivityScope Value { get; }
+        IActivityScope? Value { get; }
+
+        IActivityScope RequiredValue =>
+            Value ?? throw new InvalidOperationException("Activity scope not provided");
     }
 
     internal class ActivityScopeAccessor : IActivityScope, IActivityScopeAccessor, IActivityScopeProvider
     {
         private readonly AsyncLocal<IActivityScope> _value = new AsyncLocal<IActivityScope>();
 
-        public IActivityScope Value
+        public IActivityScope? Value
         {
             get => _value.Value;
             set => _value.Value = value ?? throw new ArgumentNullException(nameof(value));
@@ -28,7 +34,7 @@ namespace Webinex.Activity
         public IActivityScope RequiredValue =>
             Value ?? throw new InvalidOperationException("Activity scope not provided");
 
-        public IActivity Current => RequiredValue.Current;
+        public IActivity? Current => RequiredValue.Current;
 
         public IActivityContext Context => RequiredValue.Context;
 

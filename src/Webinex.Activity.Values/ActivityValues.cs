@@ -10,7 +10,7 @@ namespace Webinex.Activity
     {
         private bool _frozen;
 
-        public ActivityValues(JsonObject jsonObject = null)
+        public ActivityValues(JsonObject? jsonObject = null)
         {
             Value = jsonObject ?? new JsonObject();
         }
@@ -54,7 +54,7 @@ namespace Webinex.Activity
             return ActivityValueFlattener.Flatten(Value);
         }
 
-        public void Enrich(string path, object value)
+        public void Enrich(string path, object? value)
         {
             if (_frozen)
                 throw new InvalidOperationException($"{nameof(ActivityValues)} frozen");
@@ -90,7 +90,7 @@ namespace Webinex.Activity
             }
         }
 
-        private void AppendValue(JsonNode node, JsonPath.Item path, object value)
+        private void AppendValue(JsonNode node, JsonPath.Item path, object? value)
         {
             if (value == null || value.GetType().IsPrimitive || value is string || value is Guid)
             {
@@ -107,7 +107,7 @@ namespace Webinex.Activity
             Append(node, path, JsonObject.Create(JsonSerializer.SerializeToElement(value)));
         }
 
-        private void Append(JsonNode node, JsonPath.Item path, JsonNode value)
+        private void Append(JsonNode node, JsonPath.Item path, JsonNode? value)
         {
             if (path.IsIndex)
             {
@@ -138,11 +138,11 @@ namespace Webinex.Activity
             }
         }
 
-        public T Get<T>(string path, T defaultValue = default(T))
+        public T? Get<T>(string path, T? defaultValue = default(T))
         {
             var jPath = new JsonPath(path);
 
-            JsonNode current = Value;
+            JsonNode? current = Value;
 
             for (int i = 0; i < jPath.Path.Length; i++)
             {
@@ -168,7 +168,7 @@ namespace Webinex.Activity
                 return defaultValue;
             }
 
-            return current.Deserialize<T>();
+            return current.Deserialize<T>() ?? defaultValue;
         }
     }
 }

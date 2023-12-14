@@ -9,7 +9,7 @@ namespace Webinex.Activity.Server.Controllers
 {
     public interface IActivityServerControllerConfiguration
     {
-        IActivityServerControllerConfiguration UsePolicy([NotNull] string schema, [NotNull] string policy);
+        IActivityServerControllerConfiguration UsePolicy(string schema, string policy);
 
         IActivityServerControllerConfiguration UseAllowAnonymousController();
     }
@@ -41,8 +41,8 @@ namespace Webinex.Activity.Server.Controllers
             return this;
         }
 
-        public string Schema { get; private set; }
-        public string Policy { get; private set; }
+        public string? Schema { get; private set; }
+        public string? Policy { get; private set; }
 
         internal void Complete()
         {

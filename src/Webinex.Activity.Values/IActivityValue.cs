@@ -5,20 +5,16 @@ namespace Webinex.Activity
 {
     public interface IActivityValue
     {
-        [NotNull] string Id { get; }
-
-        [NotNull] string Kind { get; }
-
-        [MaybeNull] string ParentId { get; }
-
-        [NotNull] IActivitySystemValues SystemValues { get; }
-
-        [NotNull] ActivityValues Values { get; }
+        string Id { get; }
+        string Kind { get; }
+        string? ParentId { get; }
+        IActivitySystemValues SystemValues { get; }
+        ActivityValues Values { get; }
     }
 
     public static class ActivityValueExtensions
     {
-        public static T Get<T>([NotNull] this IActivityValue value, [NotNull] string path, T defaultValue = default(T))
+        public static T? Get<T>([NotNull] this IActivityValue value, [NotNull] string path, T? defaultValue = default(T))
         {
             value = value ?? throw new ArgumentNullException(nameof(value));
             path = path ?? throw new ArgumentNullException(nameof(path));

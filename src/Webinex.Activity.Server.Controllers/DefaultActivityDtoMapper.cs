@@ -18,7 +18,7 @@ namespace Webinex.Activity.Server.Controllers
         public async Task<ActivityDto[]> MapManyAsync(IEnumerable<ActivityRow> rowsEnumerable)
         {
             var rows = rowsEnumerable?.ToArray() ?? throw new ArgumentNullException(nameof(rowsEnumerable));
-            var userIds = rows.Select(x => x.UserId).Where(id => id != null).Distinct().ToArray();
+            var userIds = rows.Select(x => x.UserId).Where(id => id != null).Distinct().Cast<string>().ToArray();
             var userNamesById = await _activityUserNameProvider.GetUserNamesByIdAsync(userIds);
 
             return rows.Select(row =>
@@ -30,7 +30,7 @@ namespace Webinex.Activity.Server.Controllers
             }).ToArray();
         }
 
-        private ActivityDto MapOne(ActivityRow row, string name)
+        private ActivityDto MapOne(ActivityRow row, string? name)
         {
             var valuesScalars = row.Values.Select(x => x.ToScalar()).ToArray();
             var activityValues = ActivityValues.Create(valuesScalars);

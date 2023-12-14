@@ -22,7 +22,7 @@ namespace Webinex.Activity.Server.Controllers
     internal interface IActivityReadService
     {
         Task<ActivityReadResult> GetAllAsync(
-            FilterRule filterRule,
+            FilterRule? filterRule,
             SortRule sortRule,
             PagingRule pagingRule,
             bool includeTotal);
@@ -42,7 +42,7 @@ namespace Webinex.Activity.Server.Controllers
         }
 
         public async Task<ActivityReadResult> GetAllAsync(
-            FilterRule filterRule,
+            FilterRule? filterRule,
             SortRule sortRule,
             PagingRule pagingRule,
             bool includeTotal)

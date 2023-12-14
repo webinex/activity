@@ -17,7 +17,7 @@ namespace Webinex.Activity
             return FlattenNode(jObject).ToArray();
         }
 
-        private static IEnumerable<ActivityValueScalar> FlattenNode(JsonNode jNode)
+        private static IEnumerable<ActivityValueScalar> FlattenNode(JsonNode? jNode)
         {
             if (jNode == null)
                 return Array.Empty<ActivityValueScalar>();
@@ -65,12 +65,12 @@ namespace Webinex.Activity
 
         private static ActivityValueScalar Value(JsonValue jValue)
         {
-            var path = Path(jValue);
+            var path = Path(jValue) ?? throw new ArgumentNullException();
             var element = jValue.GetValue<JsonElement>();
             return new ActivityValueScalar(path, Kind(element.ValueKind), jValue.ToString());
         }
 
-        private static string Path(JsonNode jNode)
+        private static string? Path(JsonNode jNode)
         {
             var path = jNode.GetPath();
             return path == ROOT_MARKER ? null : path.Substring(ROOT_PREFIX.Length);

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Webinex.Activity
 {
     public class ActivityValueScalar
     {
-        public ActivityValueScalar([NotNull] string path, ActivityValueKind kind, [MaybeNull] string value)
+        public ActivityValueScalar(string path, ActivityValueKind kind, string? value)
         {
             Path = new ActivityValueScalarPath(path);
             Kind = kind;
@@ -16,16 +15,17 @@ namespace Webinex.Activity
 
         public ActivityValueKind Kind { get; }
 
-        public string Value { get; }
+        public string? Value { get; }
 
-        public object GetValue()
+        public object? GetValue()
         {
             return Kind switch
             {
-                ActivityValueKind.Number when Value.Contains(".") => decimal.Parse(Value),
-                ActivityValueKind.Number => int.Parse(Value),
+                ActivityValueKind.Number when (Value ?? throw new ArgumentNullException()).Contains(".") =>
+                    decimal.Parse(Value),
+                ActivityValueKind.Number => int.Parse(Value ?? throw new ArgumentNullException()),
                 ActivityValueKind.String => Value,
-                ActivityValueKind.Boolean => bool.Parse(Value),
+                ActivityValueKind.Boolean => bool.Parse(Value ?? throw new ArgumentNullException()),
                 ActivityValueKind.Null => null,
                 _ => throw new ArgumentOutOfRangeException()
             };

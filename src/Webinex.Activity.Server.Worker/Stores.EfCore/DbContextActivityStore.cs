@@ -61,7 +61,7 @@ namespace Webinex.Activity.Server.Worker.Stores.EfCore
                 Path = v.Path.Value,
                 SearchPath = v.Path.Pattern,
                 Kind = v.Kind,
-                Value = v.Value,
+                Value = v.Value ?? throw new ArgumentNullException(),
             }).ToArray();
         }
     }

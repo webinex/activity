@@ -5,7 +5,7 @@ namespace Webinex.Activity
     public interface IActivityIncomeContext
     {
         [MaybeNull]
-        IActivitySystemValues SystemValues { get; }
+        IActivitySystemValues? SystemValues { get; }
         
         [NotNull]
         ActivityPathItem[] Path { get; }

@@ -40,7 +40,7 @@ namespace Webinex.Activity
             });
         }
 
-        public IActivity Current => this.FindLastNotCompleted();
+        public IActivity? Current => this.FindLastNotCompleted();
 
         public IActivityContext Context => _contextLazy.Value;
 
@@ -91,7 +91,7 @@ namespace Webinex.Activity
         private Activity NewActivity(string kind)
         {
             var logger = _loggerFactory.CreateLogger<Activity>();
-            var parent = (Activity)Current;
+            var parent = Current as Activity;
             var outboundParent = OutboundPath.LastOrDefault();
             var parentId = parent?.Id ?? outboundParent?.Id;
             var systemValues = parent?.SystemValues ?? Context.SystemValues;

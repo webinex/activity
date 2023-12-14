@@ -6,9 +6,8 @@ namespace Webinex.Activity.Server.EfCore
     {
         private readonly ActivityDbContextSettings _dbContextSettings;
 
-        public DbSet<ActivityRow> Activities { get; set; }
-
-        public DbSet<ActivityValueRow> ActivityValues { get; set; }
+        public DbSet<ActivityRow> Activities { get; set; } = null!;
+        public DbSet<ActivityValueRow> ActivityValues { get; set; } = null!;
 
         public ActivityDbContext(ActivityDbContextSettings dbContextSettings)
             : base(dbContextSettings.Options)

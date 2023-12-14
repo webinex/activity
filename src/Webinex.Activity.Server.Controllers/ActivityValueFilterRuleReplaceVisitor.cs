@@ -5,7 +5,7 @@ namespace Webinex.Activity.Server.Controllers
 {
     internal class ActivityValueFilterRuleReplaceVisitor : FilterRuleVisitor
     {
-        public override FilterRule Visit(ValueFilterRule valueFilterRule)
+        public override FilterRule? Visit(ValueFilterRule valueFilterRule)
         {
             if (!valueFilterRule.FieldId.StartsWith(VALUE_FIELD_ID_PREFIX))
                 return null;
@@ -19,7 +19,7 @@ namespace Webinex.Activity.Server.Controllers
                     FilterRule.Eq(VALUE_SEARCH_PATH_FIELD_ID, fieldId)));
         }
 
-        public override FilterRule Visit(CollectionFilterRule collectionFilterRule)
+        public override FilterRule? Visit(CollectionFilterRule collectionFilterRule)
         {
             if (!collectionFilterRule.FieldId.StartsWith(VALUE_FIELD_ID_PREFIX))
                 return null;

@@ -8,8 +8,8 @@ namespace Webinex.Activity
 {
     public interface IActivityScopeFactory
     {
-        IActivityScope Create([MaybeNull] IActivitySystemValues systemValues, [MaybeNull] ActivityPathItem[] path);
-        IActivityScope Create(ActivityToken token = null);
+        IActivityScope Create(IActivitySystemValues? systemValues, ActivityPathItem[]? path);
+        IActivityScope Create(ActivityToken? token = null);
     }
 
     internal class ActivityScopeFactory : IActivityScopeFactory
@@ -28,7 +28,7 @@ namespace Webinex.Activity
             _contextInitializers = contextInitializers;
         }
 
-        public IActivityScope Create(IActivitySystemValues systemValues, ActivityPathItem[] path)
+        public IActivityScope Create(IActivitySystemValues? systemValues, ActivityPathItem[]? path)
         {
             return new ActivityScope(
                 _activityStore,
@@ -37,7 +37,7 @@ namespace Webinex.Activity
                 new ConstantActivityIncomeContext(systemValues, path));
         }
 
-        public IActivityScope Create(ActivityToken token = null)
+        public IActivityScope Create(ActivityToken? token = null)
         {
             return new ActivityScope(
                 _activityStore,
@@ -49,14 +49,14 @@ namespace Webinex.Activity
         private class ConstantActivityIncomeContext : IActivityIncomeContext
         {
             public ConstantActivityIncomeContext(
-                [MaybeNull] IActivitySystemValues systemValues,
-                [MaybeNull] ActivityPathItem[] path)
+                IActivitySystemValues? systemValues,
+                ActivityPathItem[]? path)
             {
                 SystemValues = systemValues;
                 Path = path ?? Array.Empty<ActivityPathItem>();
             }
 
-            public IActivitySystemValues SystemValues { get; }
+            public IActivitySystemValues? SystemValues { get; }
             public ActivityPathItem[] Path { get; }
         }
     }

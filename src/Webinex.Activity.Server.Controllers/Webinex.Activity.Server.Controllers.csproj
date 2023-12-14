@@ -2,7 +2,7 @@
   <Import Project="$(MSBuildThisFileDirectory)/../Webinex.Activity.All/Package.props" />
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <PackageId>Webinex.Activity.Server.Controllers</PackageId>
   </PropertyGroup>
 

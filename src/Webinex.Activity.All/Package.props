@@ -5,13 +5,13 @@
         <Authors>Webinex Dev</Authors>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <LangVersion>9.0</LangVersion>
-        <Nullable>disable</Nullable>
+        <LangVersion>11.0</LangVersion>
+        <Nullable>enable</Nullable>
         <Description>Easy to use activity tracking library</Description>
         <Copyright>Webinex Dev</Copyright>
-        <PackageProjectUrl>https://github.com/webinex/starter-kit</PackageProjectUrl>
-        <License>https://github.com/webinex/starter-kit/LICENSE</License>
-        <RepositoryUrl>https://github.com/webinex/starter-kit</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/webinex/activity</PackageProjectUrl>
+        <License>https://github.com/webinex/activity/LICENSE</License>
+        <RepositoryUrl>https://github.com/webinex/activity</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 </Project>

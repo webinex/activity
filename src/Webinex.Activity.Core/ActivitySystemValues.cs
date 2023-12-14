@@ -4,25 +4,29 @@ namespace Webinex.Activity
 {
     internal class ActivitySystemValues : IMutableActivitySystemValues
     {
-        private readonly IActivitySystemValues _parent;
-        private string _operationId;
-        private string _userId;
+        private readonly IActivitySystemValues? _parent;
+        private string? _operationId;
+        private string? _userId;
         private DateTimeOffset? _performedAt;
         private bool? _success;
         private bool _frozen;
         private bool? _system;
-
-        public ActivitySystemValues(IActivitySystemValues parent = null)
+        
+        public ActivitySystemValues(IActivitySystemValues parent)
         {
             _parent = parent;
-            
-            if (_parent == null)
-                _performedAt = DateTimeOffset.UtcNow;
+        }
+
+        public ActivitySystemValues(string operationId, DateTimeOffset performedAt, string? userId)
+        {
+            OperationId = operationId;
+            PerformedAt = performedAt;
+            UserId = userId;
         }
 
         public string OperationId
         {
-            get => _operationId ?? _parent?.OperationId;
+            get => _operationId ?? _parent?.OperationId ?? throw new ArgumentNullException();
             set
             {
                 AssertNotFrozen();
@@ -30,7 +34,7 @@ namespace Webinex.Activity
             }
         }
 
-        public string UserId
+        public string? UserId
         {
             get => _userId ?? _parent?.UserId;
             set

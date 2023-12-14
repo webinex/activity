@@ -11,7 +11,7 @@ namespace Webinex.Activity.AspNetCore
     internal interface IActivityAspNetCoreSettings
     {
         bool Implicit { get; }
-     
+
         [MaybeNull]
         Func<HttpContext, ControllerActionDescriptor, bool> ImplicitPredicate { get; }
     }
@@ -19,12 +19,12 @@ namespace Webinex.Activity.AspNetCore
     public interface IActivityAspNetCoreConfiguration
     {
         IMvcBuilder MvcBuilder { get; }
-        
+
         IDictionary<string, object> Values { get; }
 
         IActivityAspNetCoreConfiguration UseImplicitWhen(Func<HttpContext, ControllerActionDescriptor, bool> predicate);
     }
-    
+
     internal class ActivityAspNetCoreConfiguration : IActivityAspNetCoreConfiguration, IActivityAspNetCoreSettings
     {
         private ActivityAspNetCoreConfiguration(IMvcBuilder mvcBuilder)
@@ -35,10 +35,11 @@ namespace Webinex.Activity.AspNetCore
         }
 
         public IMvcBuilder MvcBuilder { get; }
-        
+
         public IDictionary<string, object> Values { get; } = new Dictionary<string, object>();
-        
-        public IActivityAspNetCoreConfiguration UseImplicitWhen(Func<HttpContext, ControllerActionDescriptor, bool> predicate)
+
+        public IActivityAspNetCoreConfiguration UseImplicitWhen(
+            Func<HttpContext, ControllerActionDescriptor, bool> predicate)
         {
             Implicit = true;
             ImplicitPredicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
@@ -46,13 +47,13 @@ namespace Webinex.Activity.AspNetCore
         }
 
         public bool Implicit { get; private set; }
-        public Func<HttpContext, ControllerActionDescriptor, bool> ImplicitPredicate { get; private set; }
+        public Func<HttpContext, ControllerActionDescriptor, bool>? ImplicitPredicate { get; private set; }
 
         public static ActivityAspNetCoreConfiguration GetOrCreate(IMvcBuilder mvcBuilder)
         {
-            var instance = (ActivityAspNetCoreConfiguration)
-                mvcBuilder.Services.FirstOrDefault(x =>
-                    x.ServiceType == typeof(ActivityAspNetCoreConfiguration))?.ImplementationInstance;
+            var instance = mvcBuilder.Services.FirstOrDefault(x =>
+                    x.ServiceType == typeof(ActivityAspNetCoreConfiguration))
+                ?.ImplementationInstance as ActivityAspNetCoreConfiguration;
 
             if (instance != null)
                 return instance;
@@ -71,5 +72,5 @@ namespace Webinex.Activity.AspNetCore
             configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             return configuration.UseImplicitWhen((_, __) => true);
         }
-    } 
+    }
 }
