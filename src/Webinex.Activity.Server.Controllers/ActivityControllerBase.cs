@@ -73,8 +73,8 @@ namespace Webinex.Activity.Server.Controllers
         protected virtual IActivityServerControllerSettings Settings =>
             HttpContext.RequestServices.GetRequiredService<IActivityServerControllerSettings>();
 
-        protected virtual ActivityDbContext DbContext =>
-            HttpContext.RequestServices.GetRequiredService<ActivityDbContext>();
+        protected virtual IActivityDbContext DbContext =>
+            HttpContext.RequestServices.GetRequiredService<IActivityDbContext>();
 
         protected virtual IAuthorizationService AuthorizationService =>
             HttpContext.RequestServices.GetRequiredService<IAuthorizationService>();

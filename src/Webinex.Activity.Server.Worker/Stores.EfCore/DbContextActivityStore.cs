@@ -8,9 +8,9 @@ namespace Webinex.Activity.Server.Worker.Stores.EfCore
 {
     internal class DbContextActivityStore : IActivityStore
     {
-        private readonly ActivityDbContext _dbContext;
+        private readonly IActivityDbContext _dbContext;
 
-        public DbContextActivityStore(ActivityDbContext dbContext)
+        public DbContextActivityStore(IActivityDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -27,7 +27,7 @@ namespace Webinex.Activity.Server.Worker.Stores.EfCore
         private async Task AddInternalAsync(ActivityStoreArgs[] args)
         {
             var rows = NewRows(args);
-            await _dbContext.Set<ActivityRow>().AddRangeAsync(rows);
+            await _dbContext.Activities.AddRangeAsync(rows);
         }
 
         private ActivityRow[] NewRows(ActivityStoreArgs[] args)

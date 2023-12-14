@@ -30,11 +30,11 @@ namespace Webinex.Activity.Server.Controllers
 
     internal class ActivityReadService : IActivityReadService
     {
-        private readonly ActivityDbContext _dbContext;
+        private readonly IActivityDbContext _dbContext;
         private readonly IAskyFieldMap<ActivityRow> _fieldMap;
 
         public ActivityReadService(
-            ActivityDbContext dbContext,
+            IActivityDbContext dbContext,
             IAskyFieldMap<ActivityRow> fieldMap)
         {
             _dbContext = dbContext;
