@@ -78,6 +78,7 @@ CREATE TABLE {_settings.Schema}.{_settings.ActivityTableName} (
     [Kind] [nvarchar](50) NOT NULL,
     [OperationUid] [nvarchar](50) NOT NULL,
     [UserId] [nvarchar](50) NULL,
+    [TenantId] [nvarchar](50) NULL,
     [Success] [bit] NOT NULL,
     [PerformedAt] [datetimeoffset] NOT NULL,
     [ParentUid] [nvarchar](50) NULL,

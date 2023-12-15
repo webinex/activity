@@ -1,9 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Webinex.Activity;
 
-namespace Webinex.Activity
+public interface IActivityContextInitializer
 {
-    public interface IActivityContextInitializer
-    {
-        void Initialize([NotNull] IActivityContext context);
-    }
+    void Initialize(IActivityContext context);
 }

@@ -16,6 +16,7 @@ public static class ActivityModelBuilderExtensions
             entity.Property(x => x.Uid).HasMaxLength(50).IsRequired();
             entity.Property(x => x.Kind).HasMaxLength(50).IsRequired();
             entity.Property(x => x.OperationUid).HasMaxLength(50).IsRequired();
+            entity.Property(x => x.TenantId).HasMaxLength(50).IsRequired(false);
             entity.Property(x => x.UserId).HasMaxLength(50).IsRequired(false);
             entity.Property(x => x.Success).IsRequired();
             entity.Property(x => x.PerformedAt).IsRequired();

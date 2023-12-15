@@ -10,6 +10,7 @@ namespace Webinex.Activity.Server.Controllers
         public string Id { get; set; } = null!;
         public string Kind { get; set; } = null!;
         public string OperationId { get; set; } = null!;
+        public string? TenantId { get; set; }
         public string? UserId { get; set; }
         public string? UserName { get; set; }
         public bool Success { get; set; }

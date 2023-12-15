@@ -5,6 +5,7 @@ export type ActivityField =
   | 'operationId'
   | 'kind'
   | 'parentId'
+  | 'tenantId'
   | 'userId'
   | 'success'
   | 'performedAt'

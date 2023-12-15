@@ -6,22 +6,24 @@ namespace Webinex.Activity
     {
         private readonly IActivitySystemValues? _parent;
         private string? _operationId;
+        private string? _tenantId;
         private string? _userId;
         private DateTimeOffset? _performedAt;
         private bool? _success;
         private bool _frozen;
         private bool? _system;
-        
+
         public ActivitySystemValues(IActivitySystemValues parent)
         {
             _parent = parent;
         }
 
-        public ActivitySystemValues(string operationId, DateTimeOffset performedAt, string? userId)
+        public ActivitySystemValues(string operationId, DateTimeOffset performedAt, string? userId, string? tenantId)
         {
             OperationId = operationId;
             PerformedAt = performedAt;
             UserId = userId;
+            TenantId = tenantId;
         }
 
         public string OperationId
@@ -31,6 +33,16 @@ namespace Webinex.Activity
             {
                 AssertNotFrozen();
                 _operationId = value;
+            }
+        }
+
+        public string? TenantId
+        {
+            get => _tenantId ?? _parent?.TenantId;
+            set
+            {
+                AssertNotFrozen();
+                _tenantId = value;
             }
         }
 

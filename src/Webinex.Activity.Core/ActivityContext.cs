@@ -10,8 +10,11 @@ namespace Webinex.Activity
 
         public ActivityContext(IActivitySystemValues? systemValues = null)
         {
-            _systemValues = new ActivitySystemValues(operationId: systemValues?.OperationId ?? Guid.NewGuid().ToString(),
-                    performedAt: systemValues?.PerformedAt ?? DateTimeOffset.UtcNow, userId: systemValues?.UserId);
+            _systemValues = new ActivitySystemValues(
+                operationId: systemValues?.OperationId ?? Guid.NewGuid().ToString(),
+                performedAt: systemValues?.PerformedAt ?? DateTimeOffset.UtcNow,
+                userId: systemValues?.UserId,
+                tenantId: systemValues?.TenantId);
         }
 
         public IMutableActivitySystemValues SystemValues => _systemValues;

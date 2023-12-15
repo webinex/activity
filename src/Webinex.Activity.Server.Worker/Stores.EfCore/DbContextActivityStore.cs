@@ -46,6 +46,7 @@ namespace Webinex.Activity.Server.Worker.Stores.EfCore
                 OperationUid = value.SystemValues.OperationId,
                 Success = value.SystemValues.Success,
                 UserId = value.SystemValues.UserId,
+                TenantId = value.SystemValues.TenantId,
                 PerformedAt = value.SystemValues.PerformedAt,
                 ParentUid = value.ParentId,
                 System = value.SystemValues.System,

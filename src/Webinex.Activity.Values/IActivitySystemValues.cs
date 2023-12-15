@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace Webinex.Activity
+namespace Webinex.Activity;
+
+public interface IActivitySystemValues
 {
-    public interface IActivitySystemValues
-    {
-        string OperationId { get; }
-        string? UserId { get; }
-        DateTimeOffset PerformedAt { get; }
-        bool Success { get; }
-        bool System { get; }
-    }
+    string OperationId { get; }
+    string? TenantId { get; }
+    string? UserId { get; }
+    DateTimeOffset PerformedAt { get; }
+    bool Success { get; }
+    bool System { get; }
 }

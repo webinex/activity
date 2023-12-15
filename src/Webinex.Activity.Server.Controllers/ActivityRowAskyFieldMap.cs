@@ -26,6 +26,7 @@ namespace Webinex.Activity.Server.Controllers
                     "kind" => x => x.Kind,
                     "parentId" => x => x.ParentUid!,
                     "userId" => x => x.UserId!,
+                    "tenantId" => x => x.TenantId!,
                     "success" => x => x.Success,
                     "performedAt" => x => x.PerformedAt,
                     VALUE_FIELD_ID => x => x.Values,

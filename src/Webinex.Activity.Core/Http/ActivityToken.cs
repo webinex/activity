@@ -47,6 +47,7 @@ namespace Webinex.Activity.Http
         private class ActivitySystemValuesJson : IActivitySystemValues
         {
             public string OperationId { get; set; } = null!;
+            public string? TenantId { get; set; }
             public string? UserId { get; set; }
             public DateTimeOffset PerformedAt { get; set; }
             public bool Success { get; set; }

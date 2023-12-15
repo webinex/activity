@@ -40,6 +40,7 @@ namespace Webinex.Activity.Server.Controllers
                 Id = row.Uid,
                 Kind = row.Kind,
                 OperationId = row.OperationUid,
+                TenantId = row.TenantId,
                 UserId = row.UserId,
                 UserName = name,
                 Success = row.Success,
