@@ -6,7 +6,12 @@ namespace Webinex.Activity.Server;
 
 public interface IActivityServerDbContextConfiguration
 {
-    public IActivityServerDbContextConfiguration UseDbInitializer();
+    /// <summary>
+    /// Automatically creates all required tables
+    /// </summary>
+    /// <remarks>WARNING: Use only with default implementation of <see cref="IActivityDbContext"/></remarks>
+    public IActivityServerDbContextConfiguration UseTablesAutoCreation();
+
     public IServiceCollection Services { get; }
 }
 
@@ -21,12 +26,12 @@ internal class ActivityServerDbContextConfiguration : IActivityServerDbContextCo
         Services = services;
     }
 
-    public IActivityServerDbContextConfiguration UseDbInitializer()
+    public IActivityServerDbContextConfiguration UseTablesAutoCreation()
     {
         if (_dbContextType != typeof(ActivityDbContext))
         {
             throw new InvalidOperationException(
-                $"Database initializer can be used only for default {nameof(ActivityDbContext)}");
+                $"Tables auto creation can be used only with default {nameof(IActivityDbContext)} implementation");
         }
 
         Services.AddHostedService<ActivityDbFactory>();
