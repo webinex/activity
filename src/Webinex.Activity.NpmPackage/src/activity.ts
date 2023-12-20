@@ -4,6 +4,7 @@ export interface Activity {
   id: string;
   kind: string;
   operationId: string;
+  tenantId?: string;
   userId?: string;
   userName?: string;
   success: boolean;

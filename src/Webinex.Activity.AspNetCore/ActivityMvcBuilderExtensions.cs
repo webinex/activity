@@ -8,7 +8,7 @@ namespace Webinex.Activity.AspNetCore
     {
         public static IMvcBuilder AddActivityAspNetCore(
             [NotNull] this IMvcBuilder mvcBuilder,
-            Action<IActivityAspNetCoreConfiguration> configure = null)
+            Action<IActivityAspNetCoreConfiguration>? configure = null)
         {
             mvcBuilder = mvcBuilder ?? throw new ArgumentNullException(nameof(mvcBuilder));
 

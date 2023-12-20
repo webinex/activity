@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace Webinex.Activity
+namespace Webinex.Activity;
+
+public interface IActivitySystemValues
 {
-    public interface IActivitySystemValues
-    {
-        [NotNull] string OperationId { get; }
-        [MaybeNull] string UserId { get; }
-        DateTimeOffset PerformedAt { get; }
-        bool Success { get; }
-        bool System { get; }
-    }
+    string OperationId { get; }
+    string? TenantId { get; }
+    string? UserId { get; }
+    DateTimeOffset PerformedAt { get; }
+    bool Success { get; }
+    bool System { get; }
 }

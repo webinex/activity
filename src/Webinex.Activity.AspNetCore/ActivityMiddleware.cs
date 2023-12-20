@@ -36,7 +36,7 @@ namespace Webinex.Activity.AspNetCore
         {
             CreateScope(httpContext);
             var meta = GetActivityMeta(httpContext);
-            var action = meta?.IsActivity == true ? _activityScopeProvider.Value.Push(meta.Kind) : null;
+            var action = meta?.IsActivity == true ? _activityScopeProvider.RequiredValue.Push(meta.Kind) : null;
 
             try
             {
@@ -65,7 +65,7 @@ namespace Webinex.Activity.AspNetCore
         {
             try
             {
-                await _activityScopeProvider.Value.CompleteAsync(success);
+                await _activityScopeProvider.RequiredValue.CompleteAsync(success);
             }
             catch (Exception ex)
             {
@@ -74,16 +74,16 @@ namespace Webinex.Activity.AspNetCore
             }
         }
 
-        private ActivityToken GetActivityToken(HttpContext httpContext)
+        private ActivityToken? GetActivityToken(HttpContext httpContext)
         {
             if (!httpContext.Request.Headers.ContainsKey(ActivityHttpDefaults.HEADER_NAME))
                 return null;
 
             var value = httpContext.Request.Headers[ActivityHttpDefaults.HEADER_NAME];
-            return ActivityToken.Parse(value, _activitySettings.ForwardingSecret);
+            return ActivityToken.Parse(value, _activitySettings.ForwardingSecret ?? throw new ArgumentNullException());
         }
 
-        private ActionMeta GetActivityMeta(HttpContext httpContext)
+        private ActionMeta? GetActivityMeta(HttpContext httpContext)
         {
             var descriptor = httpContext.Features.Get<IEndpointFeature>()?.Endpoint?.Metadata
                 .GetMetadata<ControllerActionDescriptor>();
@@ -118,7 +118,7 @@ namespace Webinex.Activity.AspNetCore
             public bool IsImplicitActivity => _settings.Implicit && ImplicitPredicateTrue && !ControllerNotActivity &&
                                               !HasNotActivityAction && !HasActivityDecoration;
 
-            private string Area
+            private string? Area
             {
                 get
                 {
@@ -132,7 +132,7 @@ namespace Webinex.Activity.AspNetCore
 
             private bool NoArea => ActivityAttr?.NoArea == true;
 
-            private ActivityAttribute ActivityAttr => Method.GetCustomAttribute<ActivityAttribute>();
+            private ActivityAttribute? ActivityAttr => Method.GetCustomAttribute<ActivityAttribute>();
 
             private bool HasActivityDecoration => Method.GetCustomAttribute<ActivityAttribute>() != null;
 

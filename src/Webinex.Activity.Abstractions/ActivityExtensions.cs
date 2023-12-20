@@ -40,12 +40,12 @@ namespace Webinex.Activity
             return activityScope.OutboundPath.Concat(result).ToArray();
         }
 
-        public static IActivity FindLastNotCompleted([NotNull] this IActivityScope activityScope)
+        public static IActivity? FindLastNotCompleted([NotNull] this IActivityScope activityScope)
         {
             return FindLastNotCompleted(activityScope.Root);
         }
 
-        private static IActivity FindLastNotCompleted(IEnumerable<IActivity> activities)
+        private static IActivity? FindLastNotCompleted(IEnumerable<IActivity> activities)
         {
             var notCompleted = activities.LastOrDefault(x => !x.Completed);
 

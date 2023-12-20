@@ -6,70 +6,70 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Webinex.Activity.Server.EfCore
+namespace Webinex.Activity.Server.EfCore;
+
+internal class ActivityDbFactory : IHostedService
 {
-    internal class ActivityDbFactory : IHostedService
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<ActivityDbFactory> _logger;
+    private readonly ActivityDbContextSettings _settings;
+
+    public ActivityDbFactory(
+        IServiceProvider serviceProvider,
+        ILogger<ActivityDbFactory> logger,
+        ActivityDbContextSettings settings)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ActivityDbFactory> _logger;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
+        _settings = settings;
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ActivityDbContext>();
+            new TableFactory(_logger, dbContext, _settings).EnsureCreated();
+            return Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Fatal exception had happened");
+            Environment.Exit(151369);
+            throw;
+        }
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    private class TableFactory
+    {
+        private readonly ILogger _logger;
+        private readonly ActivityDbContext _dbContext;
         private readonly ActivityDbContextSettings _settings;
 
-        public ActivityDbFactory(
-            IServiceProvider serviceProvider,
-            ILogger<ActivityDbFactory> logger,
+        public TableFactory(
+            ILogger logger,
+            ActivityDbContext dbContext,
             ActivityDbContextSettings settings)
         {
-            _serviceProvider = serviceProvider;
             _logger = logger;
+            _dbContext = dbContext;
             _settings = settings;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public void EnsureCreated()
         {
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var dbContext = scope.ServiceProvider.GetRequiredService<ActivityDbContext>();
-                new TableFactory(_logger, dbContext, _settings).EnsureCreated();
-                return Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Fatal exception had happened");
-                Environment.Exit(151369);
-                throw;
-            }
+            _logger.LogInformation("Checking database for tables...");
+            _dbContext.Database.ExecuteSqlRaw(Sql);
+            _logger.LogInformation("Tables exists or created");
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        private class TableFactory
-        {
-            private readonly ILogger _logger;
-            private readonly ActivityDbContext _dbContext;
-            private readonly ActivityDbContextSettings _settings;
-
-            public TableFactory(
-                ILogger logger,
-                ActivityDbContext dbContext,
-                ActivityDbContextSettings settings)
-            {
-                _logger = logger;
-                _dbContext = dbContext;
-                _settings = settings;
-            }
-
-            public void EnsureCreated()
-            {
-                _logger.LogInformation("Checking database for tables...");
-                _dbContext.Database.ExecuteSqlRaw(Sql);
-                _logger.LogInformation("Tables exists or created");
-            }
-
-            private string Sql => $@"
+        private string Sql => $@"
 IF OBJECT_ID(N'{_settings.Schema}.{_settings.ActivityTableName}',N'U') IS NULL
 BEGIN
 CREATE TABLE {_settings.Schema}.{_settings.ActivityTableName} (
@@ -78,6 +78,7 @@ CREATE TABLE {_settings.Schema}.{_settings.ActivityTableName} (
     [Kind] [nvarchar](50) NOT NULL,
     [OperationUid] [nvarchar](50) NOT NULL,
     [UserId] [nvarchar](50) NULL,
+    [TenantId] [nvarchar](50) NULL,
     [Success] [bit] NOT NULL,
     [PerformedAt] [datetimeoffset] NOT NULL,
     [ParentUid] [nvarchar](50) NULL,
@@ -117,5 +118,4 @@ WITH (
 ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 END;
 ";}
-    }
 }

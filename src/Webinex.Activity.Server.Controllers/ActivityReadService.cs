@@ -22,7 +22,7 @@ namespace Webinex.Activity.Server.Controllers
     internal interface IActivityReadService
     {
         Task<ActivityReadResult> GetAllAsync(
-            FilterRule filterRule,
+            FilterRule? filterRule,
             SortRule sortRule,
             PagingRule pagingRule,
             bool includeTotal);
@@ -30,11 +30,11 @@ namespace Webinex.Activity.Server.Controllers
 
     internal class ActivityReadService : IActivityReadService
     {
-        private readonly ActivityDbContext _dbContext;
+        private readonly IActivityDbContext _dbContext;
         private readonly IAskyFieldMap<ActivityRow> _fieldMap;
 
         public ActivityReadService(
-            ActivityDbContext dbContext,
+            IActivityDbContext dbContext,
             IAskyFieldMap<ActivityRow> fieldMap)
         {
             _dbContext = dbContext;
@@ -42,7 +42,7 @@ namespace Webinex.Activity.Server.Controllers
         }
 
         public async Task<ActivityReadResult> GetAllAsync(
-            FilterRule filterRule,
+            FilterRule? filterRule,
             SortRule sortRule,
             PagingRule pagingRule,
             bool includeTotal)

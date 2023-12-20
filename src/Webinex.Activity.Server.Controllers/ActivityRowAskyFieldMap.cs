@@ -13,19 +13,20 @@ namespace Webinex.Activity.Server.Controllers
         internal const string VALUE_VALUE_FIELD_ID = "$value.value";
         internal const string VALUE_SEARCH_PATH_FIELD_ID = "$value.searchPath";
 
-        public Expression<Func<ActivityRow, object>> this[string fieldId]
+        public Expression<Func<ActivityRow, object>>? this[string fieldId]
         {
             get
             {
                 fieldId = fieldId ?? throw new ArgumentNullException(nameof(fieldId));
                 
-                Expression<Func<ActivityRow, object>> expression = fieldId switch
+                Expression<Func<ActivityRow, object>>? expression = fieldId switch
                 {
                     "id" => x => x.Uid,
                     "operationId" => x => x.OperationUid,
                     "kind" => x => x.Kind,
-                    "parentId" => x => x.ParentUid,
-                    "userId" => x => x.UserId,
+                    "parentId" => x => x.ParentUid!,
+                    "userId" => x => x.UserId!,
+                    "tenantId" => x => x.TenantId!,
                     "success" => x => x.Success,
                     "performedAt" => x => x.PerformedAt,
                     VALUE_FIELD_ID => x => x.Values,

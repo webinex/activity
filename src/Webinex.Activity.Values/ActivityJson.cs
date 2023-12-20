@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -13,55 +14,59 @@ namespace Webinex.Activity
             Converters = { new ActivityValuesJsonConverter() }
         };
 
-        public static string Serialize(IActivityBatchValue batch)
+        public static string? Serialize(IActivityBatchValue? batch)
         {
             return batch == null ? null : JsonSerializer.Serialize(batch, typeof(IActivityBatchValue), JsonOptions);
         }
 
-        public static string Serialize(ActivityValues values)
+        public static string? Serialize(ActivityValues? values)
         {
             return values == null ? null : JsonSerializer.Serialize(values, JsonOptions);
         }
 
-        public static IActivityBatchValue DeserializeBatch(string json)
+        [return: NotNullIfNotNull(nameof(json))]
+        public static IActivityBatchValue? DeserializeBatch(string? json)
         {
             return json == null ? null : JsonSerializer.Deserialize<ActivityBatchValue>(json, JsonOptions);
         }
-        public static ActivityPathItem[] DeserializePath(string json)
+
+        public static ActivityPathItem[] DeserializePath(string? json)
         {
             return json == null
                 ? Array.Empty<ActivityPathItem>()
-                : JsonSerializer.Deserialize<ActivityPathItem[]>(json, JsonOptions);
+                : JsonSerializer.Deserialize<ActivityPathItem[]>(json, JsonOptions) ??
+                  throw new ArgumentNullException(nameof(json));
         }
 
-        public static ActivityValues DeserializeValues(string json)
+        [return: NotNullIfNotNull(nameof(json))]
+        public static ActivityValues? DeserializeValues(string? json)
         {
             return json == null ? null : JsonSerializer.Deserialize<ActivityValues>(json, JsonOptions);
         }
 
-        public static IActivitySystemValues DeserializeSystemValues(string json)
+        public static IActivitySystemValues? DeserializeSystemValues(string? json)
         {
             return json == null ? null : JsonSerializer.Deserialize<ActivitySystemValues>(json, JsonOptions);
         }
 
         private class ActivityBatchValue : IActivityBatchValue
         {
-            public ActivityContextValue Context { get; set; }
+            public ActivityContextValue Context { get; set; } = null!;
             IActivityContextValue IActivityBatchValue.Context => Context;
-            public IEnumerable<ActivityValue> Activities { get; set; }
+            public IEnumerable<ActivityValue> Activities { get; set; } = Array.Empty<ActivityValue>();
             IEnumerable<IActivityValue> IActivityBatchValue.Activities => Activities;
         }
 
         private class ActivityValue : IActivityValue
         {
-            public string Id { get; set; }
-            public string Kind { get; set; }
-            public string ParentId { get; set; }
-            public ActivitySystemValues SystemValues { get; set; }
+            public string Id { get; set; } = null!;
+            public string Kind { get; set; } = null!;
+            public string? ParentId { get; set; }
+            public ActivitySystemValues SystemValues { get; set; } = null!;
             IActivitySystemValues IActivityValue.SystemValues => SystemValues;
-            public JsonObject Values { get; set; }
+            public JsonObject Values { get; set; } = null!;
 
-            private ActivityValues _values = null;
+            private ActivityValues? _values = null;
 
             ActivityValues IActivityValue.Values
             {
@@ -78,14 +83,15 @@ namespace Webinex.Activity
 
         private class ActivityContextValue : IActivityContextValue
         {
-            public ActivitySystemValues SystemValues { get; set; }
+            public ActivitySystemValues SystemValues { get; set; } = null!;
             IActivitySystemValues IActivityContextValue.SystemValues => SystemValues;
         }
 
         private class ActivitySystemValues : IActivitySystemValues
         {
-            public string OperationId { get; set; }
-            public string UserId { get; set; }
+            public string OperationId { get; set; } = null!;
+            public string? TenantId { get; set; }
+            public string? UserId { get; set; }
             public DateTimeOffset PerformedAt { get; set; }
             public bool Success { get; set; }
             public bool System { get; set; }
@@ -93,7 +99,7 @@ namespace Webinex.Activity
 
         private class ActivityValuesJsonConverter : JsonConverter<ActivityValues>
         {
-            public override ActivityValues Read(
+            public override ActivityValues? Read(
                 ref Utf8JsonReader reader,
                 Type typeToConvert,
                 JsonSerializerOptions options)

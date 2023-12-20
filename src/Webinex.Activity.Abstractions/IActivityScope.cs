@@ -6,11 +6,11 @@ namespace Webinex.Activity
 {
     public interface IActivityScope
     {
-        [MaybeNull] IActivity Current { get; }
-        [NotNull] IActivityContext Context { get; }
-        [NotNull] ActivityPathItem[] OutboundPath { get; }
-        [NotNull] IEnumerable<IActivity> Root { get; }
-        IDisposableActivity Push([NotNull] string kind);
+        IActivity? Current { get; }
+        IActivityContext Context { get; }
+        ActivityPathItem[] OutboundPath { get; }
+        IEnumerable<IActivity> Root { get; }
+        IDisposableActivity Push(string kind);
         Task CompleteAsync(bool success = true);
         IActivityBatchValue ToBatch();
     }

@@ -6,15 +6,15 @@
         
         public int ActivityId { get; set; }
         
-        public virtual ActivityRow Activity { get; set; }
+        public virtual ActivityRow Activity { get; set; } = null!;
         
-        public string Path { get; set; }
+        public string Path { get; set; } = null!;
         
-        public string SearchPath { get; set; }
+        public string SearchPath { get; set; } = null!;
         
         public ActivityValueKind Kind { get; set; }
-        
-        public string Value { get; set; }
+
+        public string Value { get; set; } = null!;
 
         public ActivityValueScalar ToScalar()
         {

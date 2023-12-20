@@ -9,8 +9,7 @@ namespace Webinex.Activity
 {
     public interface IActivitySettings
     {
-        [MaybeNull]
-        string ForwardingSecret { get; }
+        string? ForwardingSecret { get; }
     }
     
     public interface IActivityConfiguration
@@ -19,7 +18,7 @@ namespace Webinex.Activity
         
         IDictionary<string, object> Values { get; }
 
-        IActivityConfiguration UseForwardingSecret([NotNull] string secret);
+        IActivityConfiguration UseForwardingSecret(string secret);
     }
     
     internal class ActivityConfiguration : IActivityConfiguration, IActivitySettings
@@ -47,13 +46,12 @@ namespace Webinex.Activity
 
         public IDictionary<string, object> Values { get; } = new Dictionary<string, object>();
 
-        public string ForwardingSecret { get; private set; }
+        public string? ForwardingSecret { get; private set; }
 
         public static ActivityConfiguration GetOrCreate(IServiceCollection services)
         {
-            var instance = (ActivityConfiguration)
-                services.FirstOrDefault(x =>
-                    x.ServiceType == typeof(ActivityConfiguration))?.ImplementationInstance;
+            var instance = services.FirstOrDefault(x =>
+                    x.ServiceType == typeof(ActivityConfiguration))?.ImplementationInstance as ActivityConfiguration;
 
             if (instance != null)
                 return instance;

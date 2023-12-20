@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Webinex.Activity.Server.Controllers
@@ -7,8 +6,8 @@ namespace Webinex.Activity.Server.Controllers
     public static class ActivityServerConfigurationExtensions
     {
         public static IMvcBuilder AddActivityServerController(
-            [NotNull] this IMvcBuilder mvcBuilder,
-            Action<IActivityServerControllerConfiguration> configure = null)
+            this IMvcBuilder mvcBuilder,
+            Action<IActivityServerControllerConfiguration>? configure = null)
         {
             mvcBuilder = mvcBuilder ?? throw new ArgumentNullException(nameof(mvcBuilder));
             

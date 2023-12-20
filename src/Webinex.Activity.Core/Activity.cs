@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
@@ -13,10 +12,10 @@ namespace Webinex.Activity
         private readonly ILogger _logger;
 
         public Activity(
-            [NotNull] string kind,
-            [MaybeNull] string parentId,
-            [NotNull] IActivitySystemValues systemValues,
-            [NotNull] ILogger<Activity> logger)
+            string kind,
+            string? parentId,
+            IActivitySystemValues systemValues,
+            ILogger<Activity> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -30,7 +29,7 @@ namespace Webinex.Activity
 
         public string Id { get; }
 
-        public string ParentId { get; }
+        public string? ParentId { get; }
 
         public IMutableActivitySystemValues SystemValues { get; set; }
 
