@@ -14,7 +14,7 @@
         
         public ActivityValueKind Kind { get; set; }
 
-        public string Value { get; set; } = null!;
+        public string? Value { get; set; }
 
         public ActivityValueScalar ToScalar()
         {

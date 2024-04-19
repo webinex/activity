@@ -41,7 +41,7 @@ public static class ActivityModelBuilderExtensions
             entity.Property(x => x.Path).HasMaxLength(4000).IsRequired();
             entity.Property(x => x.SearchPath).HasMaxLength(4000).IsRequired();
             entity.Property(x => x.Kind).IsRequired();
-            entity.Property(x => x.Value).IsRequired();
+            entity.Property(x => x.Value).IsRequired(false);
 
             entity
                 .HasOne(x => x.Activity)

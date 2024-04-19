@@ -1,5 +1,6 @@
 [Bb]in
 obj
+.package
 *.bak
 *.suo
 *.dotCover
