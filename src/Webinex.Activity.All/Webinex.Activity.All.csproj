@@ -2,7 +2,7 @@
   <Import Project="$(MSBuildThisFileDirectory)/Package.props" />
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>Webinex.Activity.All</PackageId>
   </PropertyGroup>
 
@@ -10,6 +10,7 @@
     <ProjectReference Include="..\Webinex.Activity.Abstractions\Webinex.Activity.Abstractions.csproj" />
     <ProjectReference Include="..\Webinex.Activity.AspNetCore\Webinex.Activity.AspNetCore.csproj" />
     <ProjectReference Include="..\Webinex.Activity.Core\Webinex.Activity.Core.csproj" />
+    <ProjectReference Include="..\Webinex.Activity.EntityFrameworkCore\Webinex.Activity.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Webinex.Activity.Server.Controllers\Webinex.Activity.Server.Controllers.csproj" />
     <ProjectReference Include="..\Webinex.Activity.Server.Worker\Webinex.Activity.Server.Worker.csproj" />
     <ProjectReference Include="..\Webinex.Activity.Server\Webinex.Activity.Server.csproj" />

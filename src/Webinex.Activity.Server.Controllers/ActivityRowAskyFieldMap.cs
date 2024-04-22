@@ -36,7 +36,7 @@ namespace Webinex.Activity.Server.Controllers
                 };
 
                 return expression == null && fieldId.StartsWith(VALUE_FIELD_ID_PREFIX)
-                    ? x => x.Values.First().Value
+                    ? x => x.Values.First().Value!
                     : expression;
             }
         }
