@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Webinex.Activity
+namespace Webinex.Activity;
+
+public interface IActivityContext : IActivityContextValue
 {
-    public interface IActivityContext : IActivityContextValue
-    {
-        new IMutableActivitySystemValues SystemValues { get; }
-        IDictionary<string, object> Meta { get; }
-    }
+    new IMutableActivitySystemValues SystemValues { get; }
+    IDictionary<string, object> Meta { get; }
 }

@@ -24,7 +24,7 @@ public class WhenEntityDeleted : InterceptorTestBase
             EntityChangeType.Deleted,
             _user.Id,
             _user.Values(),
-            _user.Values());
+            null);
 
         Result.Should().BeEquivalentTo(expected);
     }

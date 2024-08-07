@@ -16,8 +16,8 @@ public class WhenOwnsOneReplacedTwice : InterceptorUpdateTestBase
 
     protected override void OnUpdate(User user)
     {
-        user.ReplacePhone(Phone.Random());
-        user.ReplacePhone(_newPhone);
+        user.ReplacePrimaryPhone(Phone.Random());
+        user.ReplacePrimaryPhone(_newPhone);
     }
 
     protected override IDictionary<string, object?> ExpectedValues()

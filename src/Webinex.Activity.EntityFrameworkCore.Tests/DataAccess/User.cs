@@ -31,7 +31,7 @@ public class User
         Name = name;
     }
 
-    public void ReplacePhone(Phone phone)
+    public void ReplacePrimaryPhone(Phone phone)
     {
         Contact = new Contact(phone.Clone(), Contact.AdditionalPhone?.Clone());
     }

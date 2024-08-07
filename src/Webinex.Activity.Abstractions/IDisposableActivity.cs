@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace Webinex.Activity
+namespace Webinex.Activity;
+
+public interface IDisposableActivity : IActivity, IDisposable
 {
-    public interface IDisposableActivity : IActivity, IDisposable
-    {
-    }
 }

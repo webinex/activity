@@ -20,8 +20,10 @@ public abstract class InterceptorUpdateTestBase : InterceptorTestBase
 
     private User Initial { get; set; } = null!;
     protected User? InStorage { get; private set; }
+
+    protected virtual bool IsValuesEqual => false;
     
-    private EntityChange Result => ProcessCalls.ElementAt(1).ElementAt(0);
+    protected EntityChange Result => ProcessCalls.ElementAt(1).ElementAt(0);
     
     [Test]
     public void ShouldBeTwoCalls()
@@ -36,6 +38,12 @@ public abstract class InterceptorUpdateTestBase : InterceptorTestBase
         var expected =
             User.EntityChange(EntityChangeType.Updated, InStorage!.Id, expectedValues, InStorageInitialValues);
         Result.Should().BeEquivalentTo(expected);
+    }
+    
+    [Test]
+    public void IsValuesEqual_ShouldBeExpectedValue()
+    {
+        Result.IsValuesEqual().Should().Be(IsValuesEqual);
     }
 
     [SetUp]

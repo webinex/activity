@@ -1,4 +1,6 @@
-﻿namespace Webinex.Activity.EntityFrameworkCore;
+﻿using Webinex.Activity.EntityFrameworkCore.Utils;
+
+namespace Webinex.Activity.EntityFrameworkCore;
 
 public class EntityChange
 {
@@ -18,4 +20,13 @@ public class EntityChange
     public IDictionary<string, object?>? PrimaryKey { get; }
     public IDictionary<string, object?> Values { get; }
     public IDictionary<string, object?>? OriginalValues { get; }
+
+    public bool IsValuesEqual()
+    {
+        if (OriginalValues == null)
+            return false;
+        
+        return ValuesUtil.IsEqual(new Dictionary<string, object?>(Values),
+            new Dictionary<string, object?>(OriginalValues));
+    }
 }

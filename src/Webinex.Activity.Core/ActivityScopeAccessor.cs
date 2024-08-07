@@ -34,6 +34,7 @@ namespace Webinex.Activity
         public IActivityScope RequiredValue =>
             Value ?? throw new InvalidOperationException("Activity scope not provided");
 
+        public bool Initialized => Value != null;
         public IActivity? Current => RequiredValue.Current;
 
         public IActivityContext Context => RequiredValue.Context;
@@ -45,6 +46,11 @@ namespace Webinex.Activity
         public IDisposableActivity Push(string kind)
         {
             return RequiredValue.Push(kind);
+        }
+
+        public IActivityScope Add(string kind, Action<IActivity>? action = null)
+        {
+            return RequiredValue.Add(kind, action);
         }
 
         public Task CompleteAsync(bool success = true)

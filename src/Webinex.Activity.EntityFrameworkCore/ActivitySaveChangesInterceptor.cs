@@ -16,7 +16,7 @@ public class ActivitySaveChangesInterceptor<TSubscriber> : SaveChangesIntercepto
     {
         var context = eventData.Context;
         if (context == null) return await base.SavingChangesAsync(eventData, result, cancellationToken);
-        
+
         var logger = context.GetService<ILogger<ActivitySaveChangesInterceptor<TSubscriber>>>();
         IActivitySaveChangesSubscriber subscriber;
 
@@ -64,12 +64,15 @@ public class ActivitySaveChangesInterceptor<TSubscriber> : SaveChangesIntercepto
             var added = NonOwnedAddedEntries.Select(x => Map(x, EntityChangeType.Added)).ToArray();
             var modified = NonOwnedModifiedEntries.Select(x => Map(x, EntityChangeType.Updated)).ToArray();
             var deleted = NonOwnedDeletedEntries.Select(x => Map(x, EntityChangeType.Deleted)).ToArray();
-            var modifiedOwners = UnchangedOwners.Select(x => Map(x, EntityChangeType.Updated)).ToArray();
+            var modifiedOwners =
+                UnchangedOwnerWithModifiedOwned.Select(x => Map(x, EntityChangeType.Updated)).ToArray();
             _changes.AddRange(added.Concat(modified).Concat(modifiedOwners).Concat(deleted));
         }
 
         private EntityChange Map(EntityEntry entry, EntityChangeType type) =>
-            new(type, entry.Metadata.ClrType.Name, entry.PrimaryKey(), entry.Values(), entry.OriginalValues());
+            new(type, entry.Metadata.ClrType.Name, entry.PrimaryKey(),
+                type == EntityChangeType.Deleted ? entry.OriginalValues()! : entry.Values(),
+                type == EntityChangeType.Updated ? entry.OriginalValues() : null);
 
         private EntityEntry[] NonOwnedAddedEntries =>
             NonOwnedEnabled.Where(x => x.State == EntityState.Added).ToArray();
@@ -85,9 +88,18 @@ public class ActivitySaveChangesInterceptor<TSubscriber> : SaveChangesIntercepto
 
         private EntityEntry[] Owned => _entriesLazy.Value.Where(x => x.Metadata.IsOwned()).ToArray();
 
-        private EntityEntry[] UnchangedOwners => Owned.Select(x => x.FindUnchangedOwner())
+        private EntityEntry[] ChangedOwned => Owned
+            .Where(x => x.State is EntityState.Modified or EntityState.Deleted or EntityState.Added)
+            .ToArray();
+
+        private EntityEntry[] NonOwnedWithChangedOwned => ChangedOwned
+            .Select(x => x.FindUnchangedOwner())
             .Where(x => x != null)
             .Cast<EntityEntry>()
+            .Distinct()
+            .ToArray();
+
+        private EntityEntry[] UnchangedOwnerWithModifiedOwned => NonOwnedWithChangedOwned
             .Where(x => x.Metadata.IsActivityEnabled())
             .DistinctBy(x => x.Entity)
             .ToArray();
