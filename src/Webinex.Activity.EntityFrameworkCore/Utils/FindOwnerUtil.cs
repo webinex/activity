@@ -25,8 +25,16 @@ internal static class FindOwnerUtil
 
         bool IsPrincipalKeyMatch(EntityEntry x) => PrincipalKeyValuesSelector(x).SequenceEqual(foreignKeyValues);
 
-        return entry.Context.ChangeTracker
+        var owner = entry.Context.ChangeTracker
             .Entries()
             .FirstOrDefault(x => x.Metadata == ownership.PrincipalEntityType && IsPrincipalKeyMatch(x) && x.State == state);
+
+        if (owner == null)
+            return null;
+
+        if (!owner.Metadata.IsOwned())
+            return owner;
+
+        return FindEntity(owner, state);
     }
 }

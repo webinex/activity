@@ -16,7 +16,7 @@ public class WhenOwnsOneReplaced : InterceptorUpdateTestBase
 
     protected override void OnUpdate(User user)
     {
-        user.ReplacePhone(_newPhone);
+        user.ReplacePrimaryPhone(_newPhone);
     }
 
     protected override IDictionary<string, object?> ExpectedValues()

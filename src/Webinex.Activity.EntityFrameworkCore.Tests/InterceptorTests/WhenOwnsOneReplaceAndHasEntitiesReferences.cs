@@ -59,7 +59,7 @@ public class WhenOwnsOneReplaceAndHasEntitiesReferences : InterceptorTestBase
             var inStorage = await dbContext.Users.FindAsync(_user.Id);
             inStorage = inStorage ?? throw new InvalidOperationException();
             _inStorageInitialValues = inStorage.Values();
-            inStorage.ReplacePhone(_newPhone);
+            inStorage.ReplacePrimaryPhone(_newPhone);
             await dbContext.SaveChangesAsync();
         }
     }

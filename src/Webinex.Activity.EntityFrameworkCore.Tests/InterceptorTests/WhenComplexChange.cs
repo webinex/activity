@@ -37,7 +37,7 @@ public class WhenComplexChange : InterceptorTestBase
     {
         var result = Result.Single(x => x.Type == EntityChangeType.Deleted);
         var expected = User.EntityChange(EntityChangeType.Deleted, _toDelete.Id, _initialToDeleteValues,
-            _initialToDeleteValues);
+            null);
 
         result.Should().BeEquivalentTo(expected);
     }

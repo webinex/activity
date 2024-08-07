@@ -40,6 +40,7 @@ namespace Webinex.Activity
             });
         }
 
+        public bool Initialized => true;
         public IActivity? Current => this.FindLastNotCompleted();
 
         public IActivityContext Context => _contextLazy.Value;
@@ -58,6 +59,13 @@ namespace Webinex.Activity
                 _root.AddLast(activity);
 
             return activity;
+        }
+
+        public IActivityScope Add(string kind, Action<IActivity>? action = null)
+        {
+using var _ = Push(kind);
+            action?.Invoke(Current!);
+            return this;
         }
 
         public async Task CompleteAsync(bool success = true)
