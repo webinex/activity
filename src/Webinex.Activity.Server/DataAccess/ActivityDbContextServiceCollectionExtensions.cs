@@ -3,23 +3,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Webinex.Activity.Server.EfCore;
+namespace Webinex.Activity.Server.DataAccess;
 
 public static class DbContextActivityWorkerConfigurationExtensions
 {
     /// <summary>
     /// You can use this method to configure custom DbContext.
-    /// Model definition for <see cref="ActivityRow"/> you can find in <see cref="ActivityModelBuilderExtensions.AddActivityRowEntity"/>
-    /// Model definition for <see cref="ActivityValueRow"/> you can find in <see cref="ActivityModelBuilderExtensions.AddActivityValueRowEntity"/>
+    /// Model definition for <see cref="ActivityRowBase"/> you can find in <see cref="ActivityModelBuilderExtensions.AddActivityRowEntity{TActivity}"/>
     /// </summary>
     public static IActivityServerDbContextConfiguration AddDbContext<TContext>(
         this IActivityServerConfiguration configuration)
-        where TContext : class, IActivityDbContext
+        where TContext : class
     {
-        configuration.Services.TryAddScoped<TContext>();
-        configuration.Services.TryAddScoped<IActivityDbContext>(e => e.GetRequiredService<TContext>());
+        if (!typeof(TContext).IsAssignableTo(typeof(IActivityDbContext<>).MakeGenericType(configuration.RowType)))
+            throw new InvalidOperationException(
+                $"{nameof(TContext)} might be assignable to {nameof(IActivityDbContext<ActivityRowBase>)}<{configuration.RowType.Name}>)");
 
-        return new ActivityServerDbContextConfiguration(configuration.Services, typeof(TContext));
+        configuration.Services.TryAddScoped<TContext>();
+        configuration.Services.TryAddScoped(typeof(IActivityDbContext<>).MakeGenericType(configuration.RowType),
+            p => p.GetRequiredService<TContext>());
+
+        return new ActivityServerDbContextConfiguration(configuration.Services, configuration.RowType, typeof(TContext));
     }
 
     public static IActivityServerDbContextConfiguration AddDbContext(
@@ -71,9 +75,12 @@ public static class DbContextActivityWorkerConfigurationExtensions
             new ActivityDbContextSettings(options, activitySchema, activityTableName, activityValueTableName);
         configuration.Services.TryAddSingleton(dbContextSettings);
 
-        configuration.Services.TryAddScoped<ActivityDbContext>();
-        configuration.Services.TryAddScoped<IActivityDbContext>(sp => sp.GetRequiredService<ActivityDbContext>());
+        configuration.Services.TryAddScoped(typeof(ActivityDbContext<>).MakeGenericType(configuration.RowType));
+        configuration.Services.TryAddScoped(typeof(IActivityDbContext<>).MakeGenericType(configuration.RowType),
+            p => p.GetRequiredService(typeof(ActivityDbContext<>).MakeGenericType(configuration.RowType)));
 
-        return new ActivityServerDbContextConfiguration(configuration.Services, typeof(ActivityDbContext));
+        return new ActivityServerDbContextConfiguration(configuration.Services,
+            configuration.RowType,
+            typeof(ActivityDbContext<>).MakeGenericType(configuration.RowType));
     }
 }

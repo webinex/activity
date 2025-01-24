@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Webinex.Activity.Server.Worker.Stores;
+using Webinex.Activity.Server.Worker.DataAccess;
 
 namespace Webinex.Activity.Server.Worker;
 

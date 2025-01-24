@@ -14,7 +14,7 @@ public class ActivityValues
     private static readonly Type[] PrimitiveSerializableReferenceTypes =
     [
         typeof(string), typeof(Guid), typeof(DateTime), typeof(DateTimeOffset), typeof(TimeSpan), typeof(Uri),
-        typeof(DateOnly), typeof(TimeOnly)
+        typeof(DateOnly), typeof(TimeOnly), typeof(float), typeof(decimal),
     ];
 
     public ActivityValues(JsonObject? jsonObject = null)
@@ -24,10 +24,23 @@ public class ActivityValues
 
     internal JsonObject Value { get; }
 
-    public JsonObject AsJsonObject()
+    public JsonObject? AsJsonObject()
     {
+        if (Value.Count == 0)
+            return null;
+        
+        // clone node
         var jObject = JsonSerializer.SerializeToNode(Value);
         return jObject!.AsObject();
+    }
+
+    public JsonElement? AsJsonElement()
+    {
+        if (Value.Count == 0)
+            return null;
+        
+        // clone node
+        return JsonSerializer.SerializeToElement(Value);
     }
 
     public static ActivityValues Parse(string value)
@@ -39,7 +52,8 @@ public class ActivityValues
     {
         var result = new ActivityValues();
         var ordered = flattens
-            .OrderBy(x => x.Path.Pattern)
+            .OrderBy(x => x.Path.Pattern.Length)
+            .ThenBy(x => x.Path.Pattern)
             .ThenBy(x => x.Path.Value.Length)
             .ThenBy(x => x.Path.Value).ToArray();
 
@@ -157,7 +171,14 @@ public class ActivityValues
             return;
         }
 
-        Append(node, path, JsonObject.Create(JsonSerializer.SerializeToElement(value)));
+        try
+        {
+            Append(node, path, JsonObject.Create(JsonSerializer.SerializeToElement(value)));
+        }
+        catch
+        {
+            throw;
+        }
     }
 
     private bool IsPrimitive(object? value)

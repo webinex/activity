@@ -6,17 +6,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Webinex.Activity.Server.EfCore;
+namespace Webinex.Activity.Server.DataAccess;
 
-internal class ActivityDbFactory : IHostedService
+internal class ActivityDbFactory<TActivityRow> : IHostedService
+    where TActivityRow : ActivityRowBase
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<ActivityDbFactory> _logger;
+    private readonly ILogger<ActivityDbFactory<TActivityRow>> _logger;
     private readonly ActivityDbContextSettings _settings;
 
     public ActivityDbFactory(
         IServiceProvider serviceProvider,
-        ILogger<ActivityDbFactory> logger,
+        ILogger<ActivityDbFactory<TActivityRow>> logger,
         ActivityDbContextSettings settings)
     {
         _serviceProvider = serviceProvider;
@@ -29,7 +30,7 @@ internal class ActivityDbFactory : IHostedService
         try
         {
             using var scope = _serviceProvider.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ActivityDbContext>();
+            using var dbContext = new DbContext(_settings.Options);
             new TableFactory(_logger, dbContext, _settings).EnsureCreated();
             return Task.CompletedTask;
         }
@@ -49,12 +50,12 @@ internal class ActivityDbFactory : IHostedService
     private class TableFactory
     {
         private readonly ILogger _logger;
-        private readonly ActivityDbContext _dbContext;
+        private readonly DbContext _dbContext;
         private readonly ActivityDbContextSettings _settings;
 
         public TableFactory(
             ILogger logger,
-            ActivityDbContext dbContext,
+            DbContext dbContext,
             ActivityDbContextSettings settings)
         {
             _logger = logger;

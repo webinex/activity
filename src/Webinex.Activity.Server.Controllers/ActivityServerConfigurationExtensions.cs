@@ -1,21 +1,28 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Webinex.Activity.Server.DataAccess;
 
-namespace Webinex.Activity.Server.Controllers
+namespace Webinex.Activity.Server.Controllers;
+
+public static class ActivityServerConfigurationExtensions
 {
-    public static class ActivityServerConfigurationExtensions
+    public static IActivityServerConfiguration<TActivityRow> AddEndpoints<TActivityRow>(
+        this IActivityServerConfiguration<TActivityRow> configuration)
+        where TActivityRow : ActivityRow
     {
-        public static IMvcBuilder AddActivityServerController(
-            this IMvcBuilder mvcBuilder,
-            Action<IActivityServerControllerConfiguration>? configure = null)
-        {
-            mvcBuilder = mvcBuilder ?? throw new ArgumentNullException(nameof(mvcBuilder));
-            
-            var configuration = new ActivityServerControllerConfiguration(mvcBuilder);
-            configure?.Invoke(configuration);
-            configuration.Complete();
+        configuration.Services.TryAddScoped<IActivityReadService<TActivityRow>, ActivityReadService<TActivityRow>>();
+        configuration.Services.TryAddTransient<IActivityDTOMapper<TActivityRow>, DefaultActivityDTOMapper<TActivityRow>>();
+        DefaultActivityDTOMapperConfiguration<TActivityRow>.GetOrCreate(configuration.Services);
+        return configuration;
+    }
 
-            return mvcBuilder;
-        }
+    public static IActivityServerConfiguration<TActivityRow> ConfigureDefaultMapper<TActivityRow>(
+        this IActivityServerConfiguration<TActivityRow> configuration,
+        Action<DefaultActivityDTOMapperConfiguration<TActivityRow>> configure)
+    {
+        var mapperConfiguration =
+            DefaultActivityDTOMapperConfiguration<TActivityRow>.GetOrCreate(configuration.Services);
+        configure(mapperConfiguration);
+        return configuration;
     }
 }
