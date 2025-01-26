@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
-using Webinex.Activity.Server.Worker.Stores;
-using Webinex.Activity.Server.Worker.Stores.EfCore;
+using Webinex.Activity.Server.Worker.DataAccess;
+using Webinex.Activity.Server.Worker.DataAccess.EntityFrameworkCore;
 
 namespace Webinex.Activity.Server.Worker;
 
@@ -29,11 +28,12 @@ internal class ActivityWorkerConfiguration : IActivityWorkerConfiguration
 public static class ActivityWorkerConfigurationExtensions
 {
     public static IActivityWorkerConfiguration UseDbContext(
-        [NotNull] this IActivityWorkerConfiguration configuration)
+        this IActivityWorkerConfiguration configuration)
     {
         configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-        configuration.ServerConfiguration.Services.AddScoped<IActivityStore, DbContextActivityStore>();
+        configuration.ServerConfiguration.Services.AddScoped(typeof(IActivityStore),
+            typeof(DbContextActivityStore<>).MakeGenericType(configuration.ServerConfiguration.RowType));
         return configuration;
     }
 }

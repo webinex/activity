@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace Webinex.Activity.Server.Worker.Stores
+namespace Webinex.Activity.Server.Worker.DataAccess
 {
     public class ActivityStoreArgs
     {
-        public ActivityStoreArgs([NotNull] IActivityValue value)
+        public ActivityStoreArgs(IActivityValue value)
         {
             Value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        [NotNull]
         public IActivityValue Value { get; }
     }
 }

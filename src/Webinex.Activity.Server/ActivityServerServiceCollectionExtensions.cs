@@ -1,22 +1,29 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Webinex.Activity.Server.DataAccess;
 
-namespace Webinex.Activity.Server
+namespace Webinex.Activity.Server;
+
+public static class ActivityServerServiceCollectionExtensions
 {
-    public static class ActivityServerServiceCollectionExtensions
+    public static IServiceCollection AddActivityServer(
+        this IServiceCollection services,
+        Action<IActivityServerConfiguration<ActivityRow>> configure)
     {
-        public static IServiceCollection AddActivityServer(
-            [NotNull] this IServiceCollection services,
-            [NotNull] Action<IActivityServerConfiguration> configure)
-        {
-            services = services ?? throw new ArgumentNullException(nameof(services));
-            configure = configure ?? throw new ArgumentNullException(nameof(configure));
+        return services.AddActivityServer<ActivityRow>(configure);
+    }
 
-            var configuration = new ActivityServerConfiguration(services);
-            configure(configuration);
+    public static IServiceCollection AddActivityServer<TActivityRow>(
+        this IServiceCollection services,
+        Action<IActivityServerConfiguration<TActivityRow>> configure)
+        where TActivityRow : ActivityRow
+    {
+        services = services ?? throw new ArgumentNullException(nameof(services));
+        configure = configure ?? throw new ArgumentNullException(nameof(configure));
 
-            return services;
-        }
+        var configuration = ActivityServerConfiguration<TActivityRow>.GetOrCreate(services);
+        configure(configuration);
+
+        return services;
     }
 }
