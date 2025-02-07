@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -35,8 +34,7 @@ namespace Webinex.Activity.AspNetCore
         public async Task InvokeAsync(HttpContext httpContext)
         {
             CreateScope(httpContext);
-            var meta = GetActivityMeta(httpContext);
-            var action = meta?.IsActivity == true ? _activityScopeProvider.RequiredValue.Push(meta.Kind) : null;
+            var action = PushActivity(httpContext);
 
             try
             {
@@ -52,6 +50,16 @@ namespace Webinex.Activity.AspNetCore
 
                 throw;
             }
+        }
+
+        private IDisposableActivity? PushActivity(HttpContext context)
+        {
+            if (RequestActivityMetaFactory.TryGet(context, out var meta) && meta.IsActivity)
+            {
+                return _activityScopeProvider.RequiredValue.Push(meta.Kind!);
+            }
+
+            return null;
         }
 
         private void CreateScope(HttpContext httpContext)
@@ -80,73 +88,7 @@ namespace Webinex.Activity.AspNetCore
                 return null;
 
             var value = httpContext.Request.Headers[ActivityHttpDefaults.HEADER_NAME];
-            return ActivityToken.Parse(value, _activitySettings.ForwardingSecret ?? throw new ArgumentNullException());
-        }
-
-        private ActionMeta? GetActivityMeta(HttpContext httpContext)
-        {
-            var descriptor = httpContext.Features.Get<IEndpointFeature>()?.Endpoint?.Metadata
-                .GetMetadata<ControllerActionDescriptor>();
-
-            return descriptor == null ? null : new ActionMeta(_activityAspNetCoreSettings, descriptor, httpContext);
-        }
-
-        private class ActionMeta
-        {
-            private readonly IActivityAspNetCoreSettings _settings;
-            private readonly ControllerActionDescriptor _descriptor;
-            private readonly HttpContext _httpContext;
-
-            public ActionMeta(
-                IActivityAspNetCoreSettings settings,
-                ControllerActionDescriptor descriptor,
-                HttpContext httpContext)
-            {
-                _settings = settings;
-                _descriptor = descriptor;
-                _httpContext = httpContext;
-            }
-
-            public string Kind => Area == null
-                ? ActionKind
-                : $"{Area}:{ActionKind}";
-
-            private string ActionKind => ActivityAttr?.Kind ?? _descriptor.ActionName;
-
-            public bool IsActivity => HasActivityDecoration || IsImplicitActivity;
-
-            public bool IsImplicitActivity => _settings.Implicit && ImplicitPredicateTrue && !ControllerNotActivity &&
-                                              !HasNotActivityAction && !HasActivityDecoration;
-
-            private string? Area
-            {
-                get
-                {
-                    if (NoArea)
-                        return null;
-
-                    var controllerArea = Controller.GetCustomAttribute<ActivityAreaAttribute>()?.Area;
-                    return !IsImplicitActivity ? controllerArea : controllerArea ?? _descriptor.ControllerName;
-                }
-            }
-
-            private bool NoArea => ActivityAttr?.NoArea == true;
-
-            private ActivityAttribute? ActivityAttr => Method.GetCustomAttribute<ActivityAttribute>();
-
-            private bool HasActivityDecoration => Method.GetCustomAttribute<ActivityAttribute>() != null;
-
-            private bool HasNotActivityAction => Method.GetCustomAttribute<NotActivityAttribute>() != null;
-
-            private bool ControllerNotActivity => Controller.GetCustomAttribute<NotActivityAttribute>() != null;
-
-            private bool ImplicitPredicateTrue => _settings.ImplicitPredicate == null ||
-                                                  _settings.ImplicitPredicate?.Invoke(_httpContext, _descriptor) ==
-                                                  true;
-
-            private TypeInfo Controller => _descriptor.ControllerTypeInfo;
-
-            private MethodInfo Method => _descriptor.MethodInfo;
+            return ActivityToken.Parse(value!, _activitySettings.ForwardingSecret ?? throw new ArgumentNullException());
         }
     }
 }
