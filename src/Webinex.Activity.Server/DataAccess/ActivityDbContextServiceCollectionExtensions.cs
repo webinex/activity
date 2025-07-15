@@ -30,15 +30,13 @@ public static class DbContextActivityWorkerConfigurationExtensions
         this IActivityServerConfiguration configuration,
         string schema,
         string activityTableName,
-        string activityValueTableName,
         Action<DbContextOptionsBuilder> configureOptions)
     {
         return AddDbContext(
             configuration,
             configureOptions,
             schema,
-            activityTableName,
-            activityValueTableName);
+            activityTableName);
     }
 
     public static IActivityServerDbContextConfiguration AddDbContext(
@@ -49,30 +47,26 @@ public static class DbContextActivityWorkerConfigurationExtensions
             configuration,
             configureOptions,
             ActivityDbContextDefaults.SCHEMA,
-            ActivityDbContextDefaults.ACTIVITY_TABLE_NAME,
-            ActivityDbContextDefaults.ACTIVITY_VALUE_TABLE_NAME);
+            ActivityDbContextDefaults.ACTIVITY_TABLE_NAME);
     }
 
     private static IActivityServerDbContextConfiguration AddDbContext(
         this IActivityServerConfiguration configuration,
         Action<DbContextOptionsBuilder> configureOptions,
         string activitySchema,
-        string activityTableName,
-        string activityValueTableName)
+        string activityTableName)
     {
         configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         configureOptions = configureOptions ?? throw new ArgumentNullException(nameof(configureOptions));
         activitySchema = activitySchema ?? throw new ArgumentNullException(nameof(activitySchema));
         activityTableName = activityTableName ?? throw new ArgumentNullException(nameof(activityTableName));
-        activityValueTableName =
-            activityValueTableName ?? throw new ArgumentNullException(nameof(activityValueTableName));
 
         var optionsBuilder = new DbContextOptionsBuilder();
         configureOptions(optionsBuilder);
 
         var options = optionsBuilder.Options;
         var dbContextSettings =
-            new ActivityDbContextSettings(options, activitySchema, activityTableName, activityValueTableName);
+            new ActivityDbContextSettings(options, activitySchema, activityTableName);
         configuration.Services.TryAddSingleton(dbContextSettings);
 
         configuration.Services.TryAddScoped(typeof(ActivityDbContext<>).MakeGenericType(configuration.RowType));
