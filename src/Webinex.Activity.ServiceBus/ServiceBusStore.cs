@@ -14,7 +14,7 @@ namespace Webinex.Activity.ServiceBus
         public ServiceBusStore(ActivityServiceBusSettings settings)
         {
             _settings = settings;
-            _client = settings.CreateClient();
+            _client = CreateClient();
             _sender = _client.CreateSender(settings.TopicPath);
         }
 
@@ -38,6 +38,13 @@ namespace Webinex.Activity.ServiceBus
         {
             await _sender.DisposeAsync();
             await _client.DisposeAsync();
+        }
+
+        private ServiceBusClient CreateClient()
+        {
+            return _settings.ConnectionString != null
+                ? new ServiceBusClient(_settings.ConnectionString)
+                : new ServiceBusClient(_settings.FullyQualifiedNamespace!, _settings.Credential!);
         }
     }
 }

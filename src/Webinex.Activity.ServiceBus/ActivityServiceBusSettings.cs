@@ -1,7 +1,6 @@
 ﻿using System;
 
 using Azure.Core;
-using Azure.Messaging.ServiceBus;
 
 namespace Webinex.Activity.ServiceBus
 {
@@ -36,12 +35,5 @@ namespace Webinex.Activity.ServiceBus
         public string TopicPath { get; }
         
         public ActivityServiceBusSendBehavior SendBehavior { get; }
-
-        public ServiceBusClient CreateClient()
-        {
-            return ConnectionString != null
-                ? new ServiceBusClient(ConnectionString)
-                : new ServiceBusClient(FullyQualifiedNamespace!, Credential!);
-        }
     }
 }

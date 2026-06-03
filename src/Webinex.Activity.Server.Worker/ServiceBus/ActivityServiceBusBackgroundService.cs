@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,7 @@ namespace Webinex.Activity.Server.Worker.ServiceBus
 
         private async Task EnsureSubscriptionExistsAsync(CancellationToken cancellationToken)
         {
-            var management = _sbSettings.CreateAdministrationClient();
+            var management = CreateAdministrationClient();
             if (await management.SubscriptionExistsAsync(
                     _sbSettings.TopicPath,
                     _sbSettings.SubscriptionPath,
@@ -60,7 +61,7 @@ namespace Webinex.Activity.Server.Worker.ServiceBus
 
         private async Task SubscribeAsync(CancellationToken cancellationToken)
         {
-            await using var client = _sbSettings.CreateClient();
+            await using var client = CreateClient();
             await using var processor = client.CreateProcessor(
                 _sbSettings.TopicPath,
                 _sbSettings.SubscriptionPath,
@@ -106,6 +107,20 @@ namespace Webinex.Activity.Server.Worker.ServiceBus
                 args.EntityPath,
                 args.ErrorSource);
             return Task.CompletedTask;
+        }
+
+        private ServiceBusClient CreateClient()
+        {
+            return _sbSettings.ConnectionString != null
+                ? new ServiceBusClient(_sbSettings.ConnectionString)
+                : new ServiceBusClient(_sbSettings.FullyQualifiedNamespace!, _sbSettings.Credential!);
+        }
+
+        private ServiceBusAdministrationClient CreateAdministrationClient()
+        {
+            return _sbSettings.ConnectionString != null
+                ? new ServiceBusAdministrationClient(_sbSettings.ConnectionString)
+                : new ServiceBusAdministrationClient(_sbSettings.FullyQualifiedNamespace!, _sbSettings.Credential!);
         }
     }
 }

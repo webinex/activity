@@ -1,6 +1,4 @@
 using Azure.Core;
-using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 
 namespace Webinex.Activity.Server.Worker.ServiceBus
 {
@@ -30,19 +28,5 @@ namespace Webinex.Activity.Server.Worker.ServiceBus
         public TokenCredential? Credential { get; }
         public string TopicPath { get; }
         public string SubscriptionPath { get; }
-
-        public ServiceBusClient CreateClient()
-        {
-            return ConnectionString != null
-                ? new ServiceBusClient(ConnectionString)
-                : new ServiceBusClient(FullyQualifiedNamespace!, Credential!);
-        }
-
-        public ServiceBusAdministrationClient CreateAdministrationClient()
-        {
-            return ConnectionString != null
-                ? new ServiceBusAdministrationClient(ConnectionString)
-                : new ServiceBusAdministrationClient(FullyQualifiedNamespace!, Credential!);
-        }
     }
 }
