@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.ServiceBus.Management;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -30,8 +29,11 @@ namespace Webinex.Activity.Server.Worker.ServiceBus
         {
             try
             {
-                await EnsureSubscriptionExistsAsync();
-                Subscribe(stoppingToken);
+                await EnsureSubscriptionExistsAsync(stoppingToken);
+                await SubscribeAsync(stoppingToken);
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
             }
             catch (Exception ex)
             {
@@ -40,55 +42,85 @@ namespace Webinex.Activity.Server.Worker.ServiceBus
             }
         }
 
-        private async Task EnsureSubscriptionExistsAsync()
+        private async Task EnsureSubscriptionExistsAsync(CancellationToken cancellationToken)
         {
-            var management = new ManagementClient(_sbSettings.ConnectionString);
-            if (await management.SubscriptionExistsAsync(_sbSettings.TopicPath, _sbSettings.SubscriptionPath))
+            var management = CreateAdministrationClient();
+            if (await management.SubscriptionExistsAsync(
+                    _sbSettings.TopicPath,
+                    _sbSettings.SubscriptionPath,
+                    cancellationToken))
             {
-                await management.CloseAsync();
                 return;
             }
 
-            await management.CreateSubscriptionAsync(_sbSettings.TopicPath, _sbSettings.SubscriptionPath);
-            await management.CloseAsync();
-        }
-
-        private void Subscribe(CancellationToken cancellationToken)
-        {
-            var subscription = new SubscriptionClient(
-                _sbSettings.ConnectionString,
+            await management.CreateSubscriptionAsync(
                 _sbSettings.TopicPath,
-                _sbSettings.SubscriptionPath)
-            {
-                OperationTimeout = TimeSpan.FromSeconds(15),
-                PrefetchCount = 100,
-            };
-
-            cancellationToken.Register(() =>
-            {
-                subscription.CloseAsync().GetAwaiter().GetResult();
-            });
-            
-            subscription.RegisterMessageHandler(HandleAsync, HandleExceptionAsync);
+                _sbSettings.SubscriptionPath,
+                cancellationToken);
         }
 
-        private async Task HandleAsync(Message message, CancellationToken token)
+        private async Task SubscribeAsync(CancellationToken cancellationToken)
         {
+            await using var client = CreateClient();
+            await using var processor = client.CreateProcessor(
+                _sbSettings.TopicPath,
+                _sbSettings.SubscriptionPath,
+                new ServiceBusProcessorOptions
+                {
+                    AutoCompleteMessages = true,
+                    MaxConcurrentCalls = 1,
+                    PrefetchCount = 100,
+                });
+
+            processor.ProcessMessageAsync += HandleAsync;
+            processor.ProcessErrorAsync += HandleExceptionAsync;
+
+            await processor.StartProcessingAsync(cancellationToken);
+            try
+            {
+                await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+            }
+            finally
+            {
+                await processor.StopProcessingAsync(CancellationToken.None);
+            }
+        }
+
+        private async Task HandleAsync(ProcessMessageEventArgs args)
+        {
+            var message = args.Message;
             _logger.LogInformation("Message {Id} received", message.MessageId);
 
             await using var scope = _serviceProvider.CreateAsyncScope();
             var service = scope.ServiceProvider.GetRequiredService<IActivityWorkerService>();
-            var json = Encoding.UTF8.GetString(message.Body);
-            var batch = ActivityJson.DeserializeBatch(json);
-            await service.ProcessAsync(batch, token);
+            var batch = ActivityJson.DeserializeBatch(message.Body.ToString());
+            await service.ProcessAsync(batch, args.CancellationToken);
 
             _logger.LogInformation("Message {Id} proceed", message.MessageId);
         }
 
-        private Task HandleExceptionAsync(ExceptionReceivedEventArgs args)
+        private Task HandleExceptionAsync(ProcessErrorEventArgs args)
         {
-            _logger.LogError(args.Exception, "Exception had happened");
+            _logger.LogError(
+                args.Exception,
+                "Exception had happened while processing {EntityPath} from {ErrorSource}",
+                args.EntityPath,
+                args.ErrorSource);
             return Task.CompletedTask;
+        }
+
+        private ServiceBusClient CreateClient()
+        {
+            return _sbSettings.ConnectionString != null
+                ? new ServiceBusClient(_sbSettings.ConnectionString)
+                : new ServiceBusClient(_sbSettings.FullyQualifiedNamespace!, _sbSettings.Credential!);
+        }
+
+        private ServiceBusAdministrationClient CreateAdministrationClient()
+        {
+            return _sbSettings.ConnectionString != null
+                ? new ServiceBusAdministrationClient(_sbSettings.ConnectionString)
+                : new ServiceBusAdministrationClient(_sbSettings.FullyQualifiedNamespace!, _sbSettings.Credential!);
         }
     }
 }

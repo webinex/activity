@@ -1,4 +1,6 @@
-﻿namespace Webinex.Activity.Server.Worker.ServiceBus
+using Azure.Core;
+
+namespace Webinex.Activity.Server.Worker.ServiceBus
 {
     internal class ActivityWorkerServiceBusSettings
     {
@@ -9,7 +11,21 @@
             SubscriptionPath = subscriptionPath;
         }
 
-        public string ConnectionString { get; }
+        public ActivityWorkerServiceBusSettings(
+            string fullyQualifiedNamespace,
+            TokenCredential credential,
+            string topicPath,
+            string subscriptionPath)
+        {
+            FullyQualifiedNamespace = fullyQualifiedNamespace;
+            Credential = credential;
+            TopicPath = topicPath;
+            SubscriptionPath = subscriptionPath;
+        }
+
+        public string? ConnectionString { get; }
+        public string? FullyQualifiedNamespace { get; }
+        public TokenCredential? Credential { get; }
         public string TopicPath { get; }
         public string SubscriptionPath { get; }
     }

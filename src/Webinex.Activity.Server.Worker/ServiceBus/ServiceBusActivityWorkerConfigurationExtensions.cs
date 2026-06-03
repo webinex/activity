@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Azure.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Webinex.Activity.Server.Worker.ServiceBus
@@ -18,6 +19,31 @@ namespace Webinex.Activity.Server.Worker.ServiceBus
             subscriptionPath = subscriptionPath ?? throw new ArgumentNullException(nameof(subscriptionPath));
 
             var settings = new ActivityWorkerServiceBusSettings(connectionString, topicPath, subscriptionPath);
+            configuration.ServerConfiguration.Services.AddSingleton(settings);
+            configuration.ServerConfiguration.Services.AddHostedService<ActivityServiceBusBackgroundService>();
+
+            return configuration;
+        }
+
+        public static IActivityWorkerConfiguration AddServiceBus(
+            [NotNull] this IActivityWorkerConfiguration configuration,
+            [NotNull] string fullyQualifiedNamespace,
+            [NotNull] TokenCredential credential,
+            [NotNull] string topicPath = ActivityWorkerServiceBusDefaults.TopicPath,
+            [NotNull] string subscriptionPath = ActivityWorkerServiceBusDefaults.SubscriptionPath)
+        {
+            configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            fullyQualifiedNamespace = fullyQualifiedNamespace ??
+                                      throw new ArgumentNullException(nameof(fullyQualifiedNamespace));
+            credential = credential ?? throw new ArgumentNullException(nameof(credential));
+            topicPath = topicPath ?? throw new ArgumentNullException(nameof(topicPath));
+            subscriptionPath = subscriptionPath ?? throw new ArgumentNullException(nameof(subscriptionPath));
+
+            var settings = new ActivityWorkerServiceBusSettings(
+                fullyQualifiedNamespace,
+                credential,
+                topicPath,
+                subscriptionPath);
             configuration.ServerConfiguration.Services.AddSingleton(settings);
             configuration.ServerConfiguration.Services.AddHostedService<ActivityServiceBusBackgroundService>();
 
